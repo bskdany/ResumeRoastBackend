@@ -23,7 +23,6 @@ resource "azurerm_linux_web_app" "ResumeRoastApi" {
       allowed_origins     = ["*"]
       support_credentials = false
     }
-    app_command_line = "gunicorn -w 4 -b 0.0.0.0:8080 app:app"
   }
   app_settings = {
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
