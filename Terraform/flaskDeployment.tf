@@ -23,7 +23,6 @@ resource "azurerm_linux_web_app" "ResumeRoastApi" {
       allowed_origins     = ["*"]
       support_credentials = false
     }
-    linux_fx_version = "PYTHON|3.10"
     app_command_line = "gunicorn -w 4 -b 0.0.0.0:8080 app:app"
   }
   app_settings = {
@@ -34,8 +33,8 @@ resource "azurerm_linux_web_app" "ResumeRoastApi" {
 }
 
 
-resource "azurerm_app_service_source_control" "SourceControlFlaskBackend" {
-  app_id   = azurerm_linux_web_app.byteRelayApiService.id
-  repo_url = "https://github.com/bskdany/ResumeRoastBackend.git"
-  branch   = "main"
-}
+# resource "azurerm_app_service_source_control" "SourceControlFlaskBackend" {
+#   app_id   = azurerm_linux_web_app.ResumeRoastApi.id
+#   repo_url = "https://github.com/bskdany/ResumeRoastBackend.git"
+#   branch   = "main"
+# }

@@ -6,7 +6,7 @@ variable "resource_group_location" {
 variable "vault_name" {
   type        = string
   description = "The name of the key vault to be created. The value will be randomly generated if blank."
-  default     = "byte-relay-kv"
+  default     = "resume-roast-kv"
 }
 
 variable "key_name" {
