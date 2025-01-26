@@ -17,7 +17,7 @@ resource "azurerm_linux_web_app" "ResumeRoastApi" {
     health_check_path                 = "/healthz"
     health_check_eviction_time_in_min = 2
     application_stack {
-      python_version = "3.10"
+      python_version = "3.12"
     }
     cors {
       allowed_origins     = ["*"]
