@@ -2,7 +2,7 @@
 
 ## Overview
 
-The **Resume Roast API** is a Flask-based web application designed to provide humorous and constructive feedback on resumes. Users can upload their resumes, specify their job title and desired feedback intensity (tolerance level), and receive an audio "roast" of their resume. The feedback is generated using OpenAI's GPT model and converted to speech using Azure Cognitive Services.
+The **Resume Roast API** is a Flask-based web application designed to provide humorous and constructive feedback on resumes. Users can upload their resumes, specify their job title and desired feedback intensity (tolerance level), and receive an audio "roast" of their resume. The feedback is generated using DeepSeeks's R1 model and converted to speech using Azure Cognitive Services.
 
 The application is containerized using Docker and can be deployed to Azure using Terraform. It integrates with Azure Blob Storage for resume storage and Azure Cosmos DB for metadata storage.
 
@@ -11,17 +11,16 @@ The application is containerized using Docker and can be deployed to Azure using
 ## Features
 
 - **Resume Upload**: Users can upload their resumes via a form.
-- **Feedback Generation**: OpenAI's GPT model generates feedback based on the resume content, job title, and tolerance level.
+- **Feedback Generation**: DeepSeeks's R1 model generates feedback based on the resume content, job title, and tolerance level.
 - **Text-to-Speech**: Azure Cognitive Services converts the feedback into speech.
 - **Task Queue**: A queue system ensures feedback requests are processed in order.
 - **Health Check**: A `/healthz` endpoint monitors the application's status.
-- **CORS Support**: Cross-Origin Resource Sharing (CORS) is enabled for frontend integration.
-
 ---
 
 ## Technologies Used
 
 - **Flask**: Python web framework for building the API.
+- **React**: The universal frontend UI library
 - **Docker**: Containerization for packaging the application.
 - **Azure Blob Storage**: Stores uploaded resumes.
 - **Azure Cosmos DB**: Stores metadata about resume submissions.
@@ -65,7 +64,7 @@ ELEVEN_API_KEY=<ElevenLabs API Key>
 SPEECH_API_KEY=<Azure Speech API Key>
 SPEECH_ENDPOINT=<Azure Speech Endpoint>
 SPEECH_REGION=<Azure Speech Region>
-OPENAI_KEY=<OpenAI API Key>
+OPENAI_KEY=<DeepSeek API Key>
 ```
 3. **Build and run in Docker container**
 ```bash
