@@ -10,4 +10,4 @@ source /home/site/wwwroot/antenv/bin/activate
 pip install -r /home/site/wwwroot/requirements.txt
 
 # Run your app
-gunicorn --bind 0.0.0.0:8080 your_app:app
+gunicorn --bind 0.0.0.0:8080 app:app
