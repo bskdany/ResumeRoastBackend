@@ -1,24 +1,12 @@
-resource "azurerm_linux_web_app" "ResumeRoastWebAppService" {
-  depends_on          = [azurerm_resource_group.rg, azurerm_service_plan.backendServicePlan]
+resource "azurerm_static_web_app" "example" {
   name                = "resume-roast-webapp"
-  location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  service_plan_id     = azurerm_service_plan.backendServicePlan.id
-
-  site_config {
-    application_stack {
-      node_version = "20-lts"
-    }
-
-  }
+  location            = "centralus"
+  sku_tier            = "Free"
   app_settings = {
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
     "WEBSITES_PORT"                       = "4200"
     "WEBSITES_NODE_DEFAULT_VERSION"       = "~20"
+    "WEBSITES_WEBDEPLOY_USE_SCM"          = "false"
   }
-}
-resource "azurerm_app_service_source_control" "SourceControlByteRelayWebAppGithub" {
-  app_id   = azurerm_linux_web_app.ResumeRoastWebAppService.id
-  repo_url = "https://github.com/bskdany/ResumeRoast"
-  branch   = "main"
 }
