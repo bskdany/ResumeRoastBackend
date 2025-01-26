@@ -7,3 +7,5 @@ azure-storage-blob==12.8.1
 azure-storage==0.31.0
 azure-cosmos==4.2.0
 python-dotenv==1.0.0
+flask-cors==4.0.0 
+elevenlabs==1.0.5

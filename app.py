@@ -1,26 +1,4 @@
-from flask import Flask, jsonify
-from flask import Blueprint
-from flask import Response, request
-import os
-from elevenlabs.client import ElevenLabs
-from elevenlabs import save
-from dotenv import load_dotenv  
-import time
-import queue
-import threading
-from flask_cors import CORS  
-
-bp = Blueprint('main', __name__)
-load_dotenv()
-
-client = ElevenLabs(
-    api_key=os.getenv("ELEVEN_API_KEY")  
-)
-
-from flask import (Flask, redirect, render_template, request,
-                   send_from_directory, url_for)
-
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask import redirect, render_template, send_from_directory, url_for
 import os
 from werkzeug.utils import secure_filename
@@ -28,7 +6,11 @@ from azure.storage.blob import BlobServiceClient
 from azure.cosmos import CosmosClient, PartitionKey
 import random
 from dotenv import load_dotenv
-import string, random, requests
+import string, random
+import queue
+from flask_cors import CORS  
+from elevenlabs.client import ElevenLabs
+from elevenlabs import save
 
 load_dotenv() 
 account = os.getenv('ACCOUNT')
@@ -40,8 +22,7 @@ cosmos_database_name = os.getenv('COSMOS_DATABASE_NAME')
 cosmos_container_name = os.getenv('COSMOS_CONTAINER_NAME')
 storage_connection_string = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})  # Allow all origins
-task_queue = queue.Queue()
+CORS(app, resources={r"/*": {"origins": "*"}}) 
 
 # Initialize the BlobServiceClient
 client_blob_service_client = BlobServiceClient.from_connection_string(storage_connection_string)
@@ -52,14 +33,17 @@ cosmos_client = CosmosClient(cosmos_endpoint, cosmos_key)
 cosmos_database = cosmos_client.get_database_client(cosmos_database_name)
 cosmos_container = cosmos_database.get_container_client(cosmos_container_name)
 
+task_queue = queue.Queue()
+
 FILE_PATH = "generated.mp3"
-lock = threading.Lock()
-generation_done = threading.Event()
+
+client = ElevenLabs(
+    api_key=os.getenv("ELEVEN_API_KEY")  
+)
 
 @app.route('/healthz')
 def health_check():
     return 'OK', 200
- 
 
 @app.route('/form', methods=['POST'])
 def form():
@@ -97,6 +81,36 @@ def form():
 
 def id_generator(size=32, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
+
+
+@app.get('/add-audio')
+def add_audio():
+    task_queue.put(1)
+    return jsonify({"status": "success", "message": "Task added to queue"}), 200
+
+@app.get('/get-audio')
+def generate_audio():
+    if task_queue.empty():
+        return jsonify({"status": "error", "message": "No tasks in queue"}), 200
+
+
+    else:
+        
+        audio = client.generate(
+            text="This resume sucks. Stop playing league of legends and get some projects going",
+            voice="s2wvuS7SwITYg8dqsJdn",
+            model="eleven_multilingual_v2"
+        )
+            
+        save(audio, FILE_PATH)
+
+        task_queue.get()
+
+        return send_from_directory(
+            "./",
+            FILE_PATH,  # Replace with your filename
+            mimetype='audio/mpeg'
+        )
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
