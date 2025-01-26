@@ -10,13 +10,29 @@ import string, random, requests
 
 load_dotenv() 
 account = os.getenv('ACCOUNT')
+if(account == None):
+    account = os.environ['ACCOUNT']
 key = os.getenv('KEY')
+if(account == None):
+    account = os.environ['ACCOUNT']
 container = os.getenv('CONTAINER')
+if(account == None):
+    account = os.environ['ACCOUNT']
 cosmos_endpoint = os.getenv('COSMOS_ENDPOINT')
+if(cosmos_endpoint == None):
+    cosmos_endpoint = os.environ['COSMOS_ENDPOINT']
 cosmos_key = os.getenv('COSMOS_KEY')
+if(cosmos_key == None):
+    cosmos_key = os.environ['COSMOS_KEY']
 cosmos_database_name = os.getenv('COSMOS_DATABASE_NAME')
+if(cosmos_database_name == None):
+    cosmos_database_name = os.environ['COSMOS_DATABASE_NAME']
 cosmos_container_name = os.getenv('COSMOS_CONTAINER_NAME')
-storage_connection_string = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
+if(cosmos_container_name == None):
+    cosmos_container_name = os.environ['COSMOS_CONTAINER_NAME']
+storage_connection_string = os.getenv('AZURE_STORAGE_CONNECTION_STRING') 
+if(storage_connection_string == None):
+    storage_connection_string = os.environ['AZURE_STORAGE_CONNECTION_STRING']
 app = Flask(__name__)
 
 # Initialize the BlobServiceClient
