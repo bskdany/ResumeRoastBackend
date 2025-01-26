@@ -112,13 +112,13 @@ def generate_audio():
 
     else:
         
-        audio = client.generate(
-            text="This resume sucks. Stop playing league of legends and get some projects going",
-            voice="s2wvuS7SwITYg8dqsJdn",
-            model="eleven_multilingual_v2"
-        )
+        # audio = client.generate(
+        #     text="This resume sucks. Stop playing league of legends and get some projects going",
+        #     voice="s2wvuS7SwITYg8dqsJdn",
+        #     model="eleven_multilingual_v2"
+        # )
             
-        save(audio, FILE_PATH)
+        # save(audio, FILE_PATH)
 
         task_queue.get()
 
