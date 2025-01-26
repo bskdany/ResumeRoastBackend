@@ -11,9 +11,12 @@ import queue
 from flask_cors import CORS  
 from elevenlabs.client import ElevenLabs
 from elevenlabs import save
-import PyPDF2
+import PyPDF2, requests
 from openai import OpenAI
+from io import BytesIO
 import json
+import azure.cognitiveservices.speech as speechsdk
+
 
 load_dotenv() 
 account = os.getenv('ACCOUNT')
@@ -114,9 +117,15 @@ def generate_audio():
     if task_queue.empty():
         return jsonify({"status": "error", "message": "No tasks in queue"}), 200
 
-
     else:
+        container_id = task_queue.get()
+        container_data = get_container_id_data(container_id)
+        print("This is the container data: ", container_data)
+        resume_roast = generate_roast(text_from_remote_url(container_data['blobStorageRef']), container_data['jobTitle'], container_data['tolerance'])
         
+        print(resume_roast)
+        voice_file = text_to_audio(resume_roast)
+
         # audio = client.generate(
         #     text="This resume sucks. Stop playing league of legends and get some projects going",
         #     voice="s2wvuS7SwITYg8dqsJdn",
@@ -125,13 +134,30 @@ def generate_audio():
             
         # save(audio, FILE_PATH)
 
-        task_queue.get()
+        # task_queue.get()
 
         return send_from_directory(
             "./",
-            FILE_PATH,  # Replace with your filename
+            voice_file,  # Replace with your filename
             mimetype='audio/mpeg'
         )
+
+
+def text_to_audio(text):
+    api_key = os.getenv('SPEECH_API_KEY')
+    endpoint = os.getenv('SPEECH_ENDPOINT')
+    region = os.getenv('SPEECH_REGION')
+
+    speech_config = speechsdk.SpeechConfig(subscription=os.environ.get('SPEECH_API_KEY'), region=os.environ.get('SPEECH_REGION'))
+    audio_config = speechsdk.audio.AudioOutputConfig(filename="output.mp3")
+
+    speech_config.speech_synthesis_voice_name='it-IT-LisandroNeural'
+
+    speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
+
+    speech_synthesis_result = speech_synthesizer.speak_text_async(text).get()
+
+    return "output.mp3"
 
 
 def pdf_to_text(resume_path):
@@ -158,12 +184,10 @@ def generate_roast(resume_content, job_title, tollerance):
         max_tokens=100
     )
 
-    return completion.choices[0].message
+    return completion.choices[0].message.content
 
-def get_blob_by_id(container_id):
-    print("This is in the get_blob_by_id method")
+def get_container_id_data(container_id):
     query = f"SELECT * FROM c WHERE c.id = @id"
-    print("This is the container id that we are looking for: ", container_id)
     results = cosmos_container.query_items(
         query=query,
         parameters=[
@@ -175,44 +199,32 @@ def get_blob_by_id(container_id):
         enable_cross_partition_query=False
     )
     items = [item for item in results]
-    output = json.dumps(items, indent=True)
-    print(output)
+
+    data = {
+        "id": items[0]['id'],
+        "name": items[0]['name'],
+        "jobTitle": items[0]['jobTitle'],
+        "tolerance": items[0]['tolerance'],
+        "blobStorageRef": items[0]['blobStorageRef'],
+    }
+
+    return data
+
+def text_from_remote_url(url):
+    response = requests.get(url)
+    response.raise_for_status()  # Check if the request was successful
+
+    with BytesIO(response.content) as pdf_file:
+        reader = PyPDF2.PdfReader(pdf_file)
+        text = ""
+        for page in reader.pages:
+            text += page.extract_text()
+        return text
 
 
-    #     cosmos_container.read_item(item=container_id, partition_key=container_id)
-
-        # for item in cosmos_container.query_items(
-        #     query=query,
-        #     enable_cross_partition_query=True
-        #     ):
-        #     print(json.dumbs(item))
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080)
 
 
-        # items = list(cosmos_container.query_items(
-        #     query=query,
-        #     enable_cross_partition_query=True
-        # ))
+# generate_roast("This is a test", "Software Engineer", 50)
 
-        # ref = f'https://{account}.blob.core.windows.net/{container}/{filename}'
-
-        
-        # if items:
-            # print(items)
-            # blob_ref = items[0]['blobStorageRef']
-            # print(blob_ref)
-            # return blob_ref
-        # else:
-        #     return None
-    # except Exception as e:
-    #     print(f'Exception={e}')
-    #     return None
-
-
-@app.get('/get-roast')
-def test():
-    print("This is inside the test method")
-    get_blob_by_id("THI2J3B8G339397QG5OPD96OWXE977JT")
-    return 'Ok', 200
-
-# if __name__ == '__main__':
-#     app.run(host='0.0.0.0', port=8080)
