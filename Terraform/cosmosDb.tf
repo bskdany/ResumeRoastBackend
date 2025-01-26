@@ -1,6 +1,6 @@
 resource "azurerm_cosmosdb_account" "cosmosDbAccountService" {
 
-  name                = "resume-roast"
+  name                = "resume-roast-cosmosdb-account"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   offer_type          = "Standard"

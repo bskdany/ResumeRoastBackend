@@ -9,7 +9,8 @@ endpoint = os.getenv('SPEECH_ENDPOINT')
 region = os.getenv('SPEECH_REGION')
 
 speech_config = speechsdk.SpeechConfig(subscription=os.environ.get('SPEECH_API_KEY'), region=os.environ.get('SPEECH_REGION'))
-audio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
+audio_config = speechsdk.audio.AudioOutputConfig(filename="output.mp3")
+# audio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
 
 speech_config.speech_synthesis_voice_name='it-IT-LisandroNeural'
 
