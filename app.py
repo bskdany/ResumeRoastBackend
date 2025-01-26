@@ -13,6 +13,7 @@ from elevenlabs.client import ElevenLabs
 from elevenlabs import save
 import PyPDF2
 from openai import OpenAI
+import json
 
 load_dotenv() 
 account = os.getenv('ACCOUNT')
@@ -48,13 +49,9 @@ client_blob_service_client = BlobServiceClient.from_connection_string(storage_co
 container_blob = client_blob_service_client.get_container_client(container)
 
 # Initialize the CosmosClient
-# if cosmos_endpoint is None or cosmos_key is None or cosmos_database_name is None or cosmos_container_name is None:
-#     print("Missing required environment variables")
-    # raise ValueError("Missing required environment variables")
-# else:
-#     cosmos_client = CosmosClient(cosmos_endpoint, cosmos_key)
-#     cosmos_database = cosmos_client.get_database_client(cosmos_database_name)
-#     cosmos_container = cosmos_database.get_container_client(cosmos_container_name)
+cosmos_client = CosmosClient(cosmos_endpoint, cosmos_key)
+cosmos_database = cosmos_client.get_database_client(cosmos_database_name)
+cosmos_container = cosmos_database.get_container_client(cosmos_container_name)
 
 task_queue = queue.Queue()
 
@@ -96,8 +93,8 @@ def form():
         'isRead': False
     }
     try:
-        pass
-        # cosmos_container.create_item(body=entity)
+        cosmos_container.create_item(body=entity)
+        task_queue.put(random_filename)
     except Exception as e:
         print(f'Exception={e}')
         pass
@@ -163,5 +160,55 @@ def generate_roast(resume_content, job_title, tollerance):
 
     return completion.choices[0].message
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+def get_blob_by_id(container_id):
+    query = f"SELECT * FROM c WHERE c.id = @id"
+    results = cosmos_container.query_items(
+        query=query,
+        parameters=[
+            dict(
+                name="@id",
+                value = container_id
+            )
+        ],
+        enable_cross_partition_query=False
+    )
+
+    for item in results:
+        print(item)
+        return item
+
+
+    #     cosmos_container.read_item(item=container_id, partition_key=container_id)
+
+        # for item in cosmos_container.query_items(
+        #     query=query,
+        #     enable_cross_partition_query=True
+        #     ):
+        #     print(json.dumbs(item))
+
+
+        # items = list(cosmos_container.query_items(
+        #     query=query,
+        #     enable_cross_partition_query=True
+        # ))
+
+        # ref = f'https://{account}.blob.core.windows.net/{container}/{filename}'
+
+        
+        # if items:
+            # print(items)
+            # blob_ref = items[0]['blobStorageRef']
+            # print(blob_ref)
+            # return blob_ref
+        # else:
+        #     return None
+    # except Exception as e:
+    #     print(f'Exception={e}')
+    #     return None
+
+
+
+get_blob_by_id("0I2EE21CBA4T3AE09YYBAJ7FQEZ9S3V9")
+
+# if __name__ == '__main__':
+#     app.run(host='0.0.0.0', port=8080)
