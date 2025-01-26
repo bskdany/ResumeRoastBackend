@@ -11,14 +11,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check out the code
-      uses: actions/checkout@v4
+      # Step 1: Check out the code
+      - name: Check out the code
+        uses: actions/checkout@v4
 
-    - name: Log in to Docker Hub with PAT
-      uses: docker login --username "${{ secrets.DOCKER_HUB_USERNAME }}" --password "${{ secrets.DOCKER_HUB_PAT }}"
+      # Step 2: Log in to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PAT }}
 
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag bskdanny/mchacks:latest
+      # Step 3: Build the Docker image
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag bskdanny/mchacks:latest
 
-    - name: Push the Docker image
-      run: docker push bskdanny/mchacks:latest
+      # Step 4: Push the Docker image
+      - name: Push the Docker image
+        run: docker push bskdanny/mchacks:latest
