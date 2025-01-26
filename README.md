@@ -26,12 +26,9 @@ The application is containerized using Docker and can be deployed to Azure using
 - **Azure Blob Storage**: Stores uploaded resumes.
 - **Azure Cosmos DB**: Stores metadata about resume submissions.
 - **Azure Cognitive Services**: Handles text-to-speech conversion.
-- **OpenAI GPT**: Generates feedback based on resume content.
+- **Deepseek AI**: Generates feedback based on resume content.
 - **Terraform**: Infrastructure as Code (IaC) for Azure deployment.
 - **GitHub Actions**: CI/CD pipelines for building and deploying the application.
-
----
-
 
 ---
 
@@ -42,7 +39,9 @@ The application is containerized using Docker and can be deployed to Azure using
 - Docker
 - Python 3.12
 - Azure account with necessary permissions
-- OpenAI API key
+- Terraform
+- Azure CLI (to run terraform locally)
+- Deepseek API key
 - Azure Cognitive Services API key
 
 ### Local Development
