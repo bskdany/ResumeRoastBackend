@@ -8,6 +8,6 @@ resource "azurerm_storage_account" "blobStorageAccount" {
 resource "azurerm_storage_container" "blobStorageContainer" {
   name                  = "user-pdf-submission"
   storage_account_id    = azurerm_storage_account.blobStorageAccount.id
-  container_access_type = "private"
+  container_access_type = "container"
 }
 
