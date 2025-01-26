@@ -9,3 +9,4 @@ azure-cosmos==4.2.0
 python-dotenv==1.0.0
 flask-cors==4.0.0 
 elevenlabs==1.0.5
+azure-cognitiveservices-speech==1.42s.0
