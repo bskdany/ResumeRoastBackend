@@ -1,0 +1,24 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out the code
+      uses: actions/checkout@v4
+
+    - name: Log in to Docker Hub with PAT
+      uses: docker login --username "${{ secrets.DOCKER_HUB_USERNAME }}" --password "${{ secrets.DOCKER_HUB_PAT }}"
+
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag bskdanny/mchacks:latest
+
+    - name: Push the Docker image
+      run: docker push bskdanny/mchacks:latest
