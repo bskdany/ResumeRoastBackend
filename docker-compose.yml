@@ -7,8 +7,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
-    env_file:
-      - .env
     volumes:
       - .:/app
     command: python app.py
