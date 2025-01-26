@@ -151,7 +151,7 @@ def text_to_audio(text):
     speech_config = speechsdk.SpeechConfig(subscription=os.environ.get('SPEECH_API_KEY'), region=os.environ.get('SPEECH_REGION'))
     audio_config = speechsdk.audio.AudioOutputConfig(filename="output.mp3")
 
-    speech_config.speech_synthesis_voice_name='it-IT-LisandroNeural'
+    speech_config.speech_synthesis_voice_name='en-US-DavisNeural'
 
     speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
 
@@ -178,7 +178,8 @@ def generate_roast(resume_content, job_title, tollerance):
     completion = openai_client.chat.completions.create(
         model="deepseek-chat",
         messages=[
-            {"role": "system", "content": f"You're a professional in the {job_title} field. You're given a resume by a candidate that you need to review depending on a roasting level, a level of 0 means constructive criticism, 100 means roast and borderline insult the person, your level is {tollerance}"},
+            {"role": "system", "content": f"You're a professional in the {job_title} field. You're given a resume by a candidate that you need to review depending on a roasting level, a level of 0 means constructive criticism, 100 means roast and borderline insult the person, your level is {tollerance}. Create
+             a short speech like monolgue about it"},
             {"role": "user", "content": f"Here is the content from a PDF:\n\n{resume_content}"}
             ],
         max_tokens=100
