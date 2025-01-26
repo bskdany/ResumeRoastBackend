@@ -7,7 +7,7 @@ python -m venv /home/site/wwwroot/antenv
 source /home/site/wwwroot/antenv/bin/activate
 
 # Install dependencies
-pip install -r /home/site/wwwroot/requirements.txt
+pip install -r /home/site/wwwroot/requirements.txt --force-reinstall
 
 # Run your app
-gunicorn --bind 0.0.0.0:8080 your_app:app
+gunicorn --bind 0.0.0.0:8080 app:app
