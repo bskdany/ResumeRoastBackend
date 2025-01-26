@@ -161,7 +161,9 @@ def generate_roast(resume_content, job_title, tollerance):
     return completion.choices[0].message
 
 def get_blob_by_id(container_id):
+    print("This is in the get_blob_by_id method")
     query = f"SELECT * FROM c WHERE c.id = @id"
+    print("This is the container id that we are looking for: ", container_id)
     results = cosmos_container.query_items(
         query=query,
         parameters=[
@@ -172,10 +174,9 @@ def get_blob_by_id(container_id):
         ],
         enable_cross_partition_query=False
     )
-
-    for item in results:
-        print(item)
-        return item
+    items = [item for item in results]
+    output = json.dumps(items, indent=True)
+    print(output)
 
 
     #     cosmos_container.read_item(item=container_id, partition_key=container_id)
@@ -207,8 +208,11 @@ def get_blob_by_id(container_id):
     #     return None
 
 
-
-get_blob_by_id("0I2EE21CBA4T3AE09YYBAJ7FQEZ9S3V9")
+@app.get('/get-roast')
+def test():
+    print("This is inside the test method")
+    get_blob_by_id("THI2J3B8G339397QG5OPD96OWXE977JT")
+    return 'Ok', 200
 
 # if __name__ == '__main__':
 #     app.run(host='0.0.0.0', port=8080)
