@@ -10,3 +10,9 @@ services:
     volumes:
       - .:/app
     command: python app.py
+    deploy:
+      update_config:
+        order: start-first
+      restart_policy:
+        condition: on-failure
+    pull_policy: always
