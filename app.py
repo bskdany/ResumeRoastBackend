@@ -11,6 +11,8 @@ import queue
 from flask_cors import CORS  
 from elevenlabs.client import ElevenLabs
 from elevenlabs import save
+import PyPDF2
+from openai import OpenAI
 
 load_dotenv() 
 account = os.getenv('ACCOUNT')
@@ -37,6 +39,7 @@ if(cosmos_container_name == None):
 storage_connection_string = os.getenv('AZURE_STORAGE_CONNECTION_STRING') 
 if(storage_connection_string == None):
     storage_connection_string = os.environ['AZURE_STORAGE_CONNECTION_STRING']
+
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}) 
 
@@ -45,15 +48,19 @@ client_blob_service_client = BlobServiceClient.from_connection_string(storage_co
 container_blob = client_blob_service_client.get_container_client(container)
 
 # Initialize the CosmosClient
-cosmos_client = CosmosClient(cosmos_endpoint, cosmos_key)
-cosmos_database = cosmos_client.get_database_client(cosmos_database_name)
-cosmos_container = cosmos_database.get_container_client(cosmos_container_name)
+# if cosmos_endpoint is None or cosmos_key is None or cosmos_database_name is None or cosmos_container_name is None:
+#     print("Missing required environment variables")
+    # raise ValueError("Missing required environment variables")
+# else:
+#     cosmos_client = CosmosClient(cosmos_endpoint, cosmos_key)
+#     cosmos_database = cosmos_client.get_database_client(cosmos_database_name)
+#     cosmos_container = cosmos_database.get_container_client(cosmos_container_name)
 
 task_queue = queue.Queue()
 
 FILE_PATH = "generated.mp3"
 
-client = ElevenLabs(
+client_eleven_labs = ElevenLabs(
     api_key=os.getenv("ELEVEN_API_KEY")  
 )
 
@@ -89,7 +96,8 @@ def form():
         'isRead': False
     }
     try:
-        cosmos_container.create_item(body=entity)
+        pass
+        # cosmos_container.create_item(body=entity)
     except Exception as e:
         print(f'Exception={e}')
         pass
@@ -127,6 +135,33 @@ def generate_audio():
             FILE_PATH,  # Replace with your filename
             mimetype='audio/mpeg'
         )
+
+
+def pdf_to_text(resume_path):
+
+    # we should add a limit of how many chars we actually read
+    with open(resume_path, 'rb') as pdf_file:
+        reader = PyPDF2.PdfReader(pdf_file)
+        text = ""
+        for page in reader.pages:
+            text += page.extract_text()
+        return text        
+
+def generate_roast(resume_content, job_title, tollerance):
+    openai_key = os.getenv('OPENAI_KEY')
+    print(openai_key)
+    openai_client = OpenAI(api_key=openai_key, base_url="https://api.deepseek.com")
+
+    completion = openai_client.chat.completions.create(
+        model="deepseek-chat",
+        messages=[
+            {"role": "system", "content": f"You're a professional in the {job_title} field. You're given a resume by a candidate that you need to review depending on a roasting level, a level of 0 means constructive criticism, 100 means roast and borderline insult the person, your level is {tollerance}"},
+            {"role": "user", "content": f"Here is the content from a PDF:\n\n{resume_content}"}
+            ],
+        max_tokens=100
+    )
+
+    return completion.choices[0].message
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
