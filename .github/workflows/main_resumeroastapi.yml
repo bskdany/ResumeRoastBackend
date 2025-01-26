@@ -22,16 +22,16 @@ jobs:
       - name: Set up Python version
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
       - name: Create and start virtual environment
         run: |
           python -m venv venv
           source venv/bin/activate
-      
+
       - name: Install dependencies
         run: pip install -r requirements.txt
-        
+
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
       - name: Zip artifact for deployment
@@ -49,9 +49,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: 'Production'
+      name: "Production"
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
@@ -61,11 +61,10 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      
-      - name: 'Deploy to Azure Web App'
+      - name: "Deploy to Azure Web App"
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'ResumeRoastApi'
-          slot-name: 'Production'
+          app-name: "ResumeRoastApi"
+          slot-name: "Production"
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_396486ABF7224234A59EDFE84FB094C2 }}
