@@ -178,8 +178,7 @@ def generate_roast(resume_content, job_title, tollerance):
     completion = openai_client.chat.completions.create(
         model="deepseek-chat",
         messages=[
-            {"role": "system", "content": f"You're a professional in the {job_title} field. You're given a resume by a candidate that you need to review depending on a roasting level, a level of 0 means constructive criticism, 100 means roast and borderline insult the person, your level is {tollerance}. Create
-             a short speech like monolgue about it"},
+            {"role": "system", "content": f"You're a professional in the {job_title} field. You're given a resume by a candidate that you need to review depending on a roasting level, a level of 0 means constructive criticism, 100 means roast and borderline insult the person, your level is {tollerance}. Create a short speech like monolgue about it"},
             {"role": "user", "content": f"Here is the content from a PDF:\n\n{resume_content}"}
             ],
         max_tokens=100
