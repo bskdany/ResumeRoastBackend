@@ -2,7 +2,7 @@ from flask import Flask, request
 from flask import redirect, render_template, send_from_directory, url_for
 import os
 from werkzeug.utils import secure_filename
-from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
+from azure.storage.blob import BlobServiceClient
 from azure.cosmos import CosmosClient, PartitionKey
 import random
 from dotenv import load_dotenv
